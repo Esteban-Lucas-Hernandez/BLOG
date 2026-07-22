@@ -1,16 +1,107 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Blog</title>
+    <title>Gestión de Proyectos Premium</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.1/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+      document.addEventListener("turbo:load", () => {
+        if (!window.turboConfirmOverridden) {
+          Turbo.setConfirmMethod((message, element) => {
+            return new Promise((resolve) => {
+              Swal.fire({
+                title: '¿Estás seguro?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, continuar',
+                cancelButtonText: 'Cancelar'
+              }).then((result) => {
+                resolve(result.isConfirmed);
+              });
+            });
+          });
+          window.turboConfirmOverridden = true;
+        }
+      });
+    </script>
   </head>
 
   <body>
-    <%= yield %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+      <div class="container">
+        <%= link_to "GestiónApp", root_path, class: "navbar-brand fw-bold" %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <%= link_to "Proyectos", projects_path, class: "nav-link #{'active' if controller_name == 'projects'}" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "Clientes", clients_path, class: "nav-link #{'active' if controller_name == 'clients'}" %>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container main-content pb-5">
+      <%= yield %>
+    </div>
+
+    <!-- Flash Messages via SweetAlert Toast -->
+    <script>
+      (function() {
+        // Prevenir que se muestre el toast repetido cuando Turbo carga desde la caché (preview)
+        if (document.documentElement.hasAttribute("data-turbo-preview")) return;
+
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        });
+
+        <% if notice.present? %>
+          Toast.fire({ icon: "success", title: "<%= j notice %>" });
+        <% end %>
+        <% if alert.present? %>
+          Toast.fire({ icon: "error", title: "<%= j alert %>" });
+        <% end %>
+      })();
+    </script>
   </body>
 </html>

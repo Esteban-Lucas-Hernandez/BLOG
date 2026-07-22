@@ -1,0 +1,29 @@
+<%= form_with(model: client, class: "card border-0 shadow-sm") do |form| %>
+  <div class="card-body">
+    <% if client.errors.any? %>
+      <div class="alert alert-danger">
+        <h6 class="alert-heading fw-bold"><%= pluralize(client.errors.count, "error") %> impidieron guardar:</h6>
+        <ul class="mb-0 small">
+          <% client.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-3">
+      <%= form.label :name, "Nombre completo", class: "form-label fw-medium" %>
+      <%= form.text_field :name, class: "form-control" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :email, "Correo electrónico", class: "form-label fw-medium" %>
+      <%= form.email_field :email, class: "form-control" %>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+      <%= link_to "Cancelar", clients_path, class: "btn btn-light" %>
+      <%= form.submit "Guardar Cliente", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>

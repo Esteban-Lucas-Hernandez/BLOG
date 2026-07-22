@@ -1,0 +1,75 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h2 fw-bold mb-0"><%= @client.name %></h1>
+  <div>
+    <%= link_to "Editar", edit_client_path(@client), class: "btn btn-outline-secondary me-2" %>
+    <%= link_to "Volver", clients_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body text-center p-4">
+        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-primary" style="width: 80px; height: 80px;">
+          <i class="bi bi-person-bounding-box fs-2"></i>
+        </div>
+        <h5 class="fw-bold mb-1"><%= @client.name %></h5>
+        <p class="text-muted mb-4"><a href="mailto:<%= @client.email %>" class="text-decoration-none"><%= @client.email %></a></p>
+        
+        <hr>
+        
+        <div class="row text-center mt-3">
+          <div class="col-4">
+            <h4 class="fw-bold text-primary mb-0"><%= @client.projects.where(status: 'active').count %></h4>
+            <span class="small text-muted">Activos</span>
+          </div>
+          <div class="col-4 border-start border-end">
+            <h4 class="fw-bold text-warning mb-0"><%= @client.projects.where(status: 'paused').count %></h4>
+            <span class="small text-muted">Pausados</span>
+          </div>
+          <div class="col-4">
+            <h4 class="fw-bold text-success mb-0"><%= @client.projects.where(status: 'completed').count %></h4>
+            <span class="small text-muted">Completos</span>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-top">
+          <%= button_to "Eliminar Cliente", @client, method: :delete, class: "btn btn-outline-danger w-100", data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro? No se podrá eliminar si tiene proyectos activos." } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white pb-0 pt-3 border-0 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Proyectos Asociados</h5>
+        <%= link_to "Nuevo Proyecto", new_project_path(project: { client_id: @client.id }), class: "btn btn-sm btn-primary" %>
+      </div>
+      <div class="card-body">
+        <% if @client.projects.empty? %>
+          <div class="text-center text-muted p-5">
+            <i class="bi bi-folder2-open fs-1 text-light"></i>
+            <p class="mt-2 mb-0">Este cliente aún no tiene proyectos.</p>
+          </div>
+        <% else %>
+          <div class="list-group list-group-flush">
+            <% @client.projects.each do |project| %>
+              <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-bottom">
+                <div>
+                  <h6 class="fw-bold mb-1"><%= link_to project.title, project, class: "text-decoration-none" %></h6>
+                  <div class="progress" style="height: 4px; width: 100px;">
+                    <div class="progress-bar <%= project.progress_percentage == 100 ? 'bg-success' : 'bg-primary' %>" style="width: <%= project.progress_percentage %>%;"></div>
+                  </div>
+                </div>
+                <span class="badge rounded-pill <%= project.status == 'active' ? 'bg-success' : (project.status == 'paused' ? 'bg-warning' : 'bg-secondary') %>">
+                  <%= project.status.capitalize %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

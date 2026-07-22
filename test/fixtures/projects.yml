@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: Project One
+  status: active
+  client: one
+
+two:
+  title: Project Two
+  status: completed
+  client: two

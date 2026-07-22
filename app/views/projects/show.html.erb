@@ -1,0 +1,115 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h2 fw-bold mb-0"><%= @project.title %></h1>
+  <div>
+    <%= link_to "Editar", edit_project_path(@project), class: "btn btn-outline-secondary me-2" %>
+    <%= link_to "Volver", projects_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white pb-0 pt-3 border-0">
+        <h5 class="fw-bold mb-0">Detalles del Proyecto</h5>
+      </div>
+      <div class="card-body">
+        <p class="mb-3">
+          <span class="text-muted d-block small">Cliente</span>
+          <span class="fw-medium"><i class="bi bi-person me-1"></i> <%= @project.client.name %></span>
+        </p>
+        <p class="mb-3">
+          <span class="text-muted d-block small">Estado</span>
+          <span class="badge <%= @project.status == 'active' ? 'bg-success' : (@project.status == 'paused' ? 'bg-warning' : 'bg-secondary') %> mt-1">
+            <%= @project.status.capitalize %>
+          </span>
+        </p>
+        
+        <hr>
+        
+        <p class="text-muted d-block small mb-2">Progreso General</p>
+        <div class="progress-bar-container mt-0">
+          <div class="progress-bar <%= @project.progress_percentage == 100 ? 'bg-success' : 'bg-primary' %>" style="width: <%= @project.progress_percentage %>%;">
+            <%= @project.progress_percentage %>%
+          </div>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top">
+          <%= button_to "Eliminar Proyecto", @project, method: :delete, class: "btn btn-outline-danger w-100", data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de que deseas eliminar este proyecto de forma permanente?" } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white pb-0 pt-3 border-0 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0">Tareas</h5>
+      </div>
+      <div class="card-body">
+        <!-- Add Task Form -->
+        <% if @project.status == 'completed' %>
+          <div class="alert alert-info text-center shadow-sm border-0 mb-4">
+            <i class="bi bi-info-circle me-1"></i> Este proyecto está completado. Cambie su estado a activo para agregar más tareas.
+          </div>
+        <% else %>
+          <div class="card mb-4 border-1 bg-light shadow-none">
+            <div class="card-body p-3">
+              <%= form_with model: Task.new(project_id: @project.id), local: true, class: "row g-2 align-items-end" do |f| %>
+                <%= f.hidden_field :project_id %>
+                <div class="col-md-5">
+                  <%= f.label :title, "Nueva Tarea", class: "form-label small text-muted mb-1" %>
+                  <%= f.text_field :title, class: "form-control form-control-sm", placeholder: "Ej. Diseñar mockups", required: true %>
+                </div>
+                <div class="col-md-4">
+                  <%= f.label :due_date, "Fecha Límite", class: "form-label small text-muted mb-1" %>
+                  <%= f.date_field :due_date, class: "form-control form-control-sm" %>
+                </div>
+                <div class="col-md-3">
+                  <%= f.submit "Agregar", class: "btn btn-primary btn-sm w-100" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Task List -->
+        <% if @project.tasks.select(&:persisted?).empty? %>
+          <div class="text-center text-muted p-5">
+            <i class="bi bi-list-task fs-1 text-light"></i>
+            <p class="mt-2 mb-0">No hay tareas en este proyecto.</p>
+          </div>
+        <% else %>
+          <% @project.tasks.each do |task| %>
+            <% if task.persisted? %>
+              <div class="<%= task.overdue? ? 'task-overdue' : 'task-item' %>">
+                <div class="d-flex align-items-center flex-grow-1">
+                  <%= form_with model: task, local: true, class: "m-0 me-3 d-flex align-items-center" do |f| %>
+                    <% checkbox_disabled = task.overdue? || (@project.status == 'paused' && !task.done) %>
+                    <%= f.check_box :done, class: "task-checkbox", onchange: 'this.form.submit()', disabled: checkbox_disabled %>
+                  <% end %>
+                  <div>
+                    <span class="task-title <%= 'text-decoration-line-through text-muted' if task.done %>"><%= task.title %></span>
+                    <% if task.due_date %>
+                      <div class="task-due mt-1 <%= task.overdue? ? 'text-danger fw-bold' : '' %>">
+                        <i class="bi bi-calendar2-event me-1"></i>
+                        <%= task.due_date.strftime("%d %b %Y") %>
+                        <% if task.overdue? %>
+                          <span class="badge bg-danger ms-2">Vencida</span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+                <div>
+                  <%= button_to task_path(task), method: :delete, class: "btn btn-sm btn-light text-danger border-0", data: { turbo_method: :delete, turbo_confirm: "¿Borrar esta tarea?" } do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
