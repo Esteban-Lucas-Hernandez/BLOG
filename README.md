@@ -95,6 +95,11 @@ c:\hola\BLOG\
    rails server
    ```
 
+> [!TIP]
+> **Solución a errores comunes en Windows:**
+> Si al cargar la página ves un error rojo que dice `Errno::EACCES` relacionado con `tmp/cache`, se debe a que el antivirus (Windows Defender) está bloqueando la caché de Rails. 
+> **Solución:** Detén el servidor, ejecuta `rails tmp:clear` en la consola, y vuelve a levantarlo. Para evitarlo definitivamente, agrega la carpeta `tmp/` del proyecto a las exclusiones de tu antivirus.
+
 ## Ejecución de Tests Automáticos
 
 El sistema cuenta con un robusto conjunto de más de 20 tests entre modelos y controladores que garantizan que las reglas de negocio complejas no se rompan en el futuro.
