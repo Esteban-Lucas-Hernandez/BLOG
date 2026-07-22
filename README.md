@@ -104,7 +104,17 @@ c:\hola\BLOG\
 
 El sistema cuenta con un robusto conjunto de más de 20 tests entre modelos y controladores que garantizan que las reglas de negocio complejas no se rompan en el futuro.
 
-Para ejecutarlos, corre en la consola:
+**Paso 1:** Siempre asegúrate de preparar y sincronizar la base de datos de pruebas antes de ejecutarlos (especialmente si es la primera vez que clonas el proyecto):
+```bash
+rails db:test:prepare
+```
+
+**Paso 2:** Ejecuta todos los tests:
 ```bash
 rails test
 ```
+
+> [!WARNING]
+> **Aviso para usuarios de Windows:**
+> Si al correr `rails test` obtienes el mismo error `Errno::EACCES` (Permission denied) relacionado con `tmp/cache/assets/sprockets`, significa que tu antivirus bloqueó los archivos temporales generados durante el test.
+> **Solución:** Ejecuta `rails tmp:clear` y vuelve a correr los tests.
