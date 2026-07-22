@@ -3,6 +3,8 @@ class Task < ApplicationRecord
 
   validates :title, presence: true
   
+  after_initialize :set_defaults, if: :new_record?
+
   validate :cannot_complete_if_overdue, on: :update
   validate :project_not_paused_when_completing, on: :update
   validate :project_not_completed_when_creating, on: :create
